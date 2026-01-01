@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stylist Dashboard — Angels Hair Mall</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --ink:#0b0b0b;
+  --muted:#6f6f6f;
+  --line:#e9e9e9;
+  --soft:#f7f7f7;
+  --card:#ffffff;
+  --shadow: 0 18px 50px rgba(0,0,0,.06);
+  --radius: 18px;
+  --gold:#b38b2e; /* subtle luxe accent */
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  letter-spacing:.01em;
+}
+
+/* ====== HEADER ====== */
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(130%) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  max-width:1440px;
+  margin:0 auto;
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:240px;
+}
+.brand-title{
+  font-family:"Playfair Display",serif;
+  font-weight:500;
+  letter-spacing:.18em;
+  font-size:14px;
+  text-transform:uppercase;
+}
+.badge{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:6px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+}
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav a{
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--ink);
+  padding:10px 10px;
+  border-radius:10px;
+}
+.nav a:hover{ background:var(--soft); }
+.icon-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 12px;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.icon-btn:hover{ border-color:#d8d8d8; }
+.icon-btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* ====== LAYOUT ====== */
+.wrap{
+  max-width:1440px;
+  margin:0 auto;
+  padding:34px 24px 80px;
+}
+.hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  padding:22px 0 26px;
+  border-bottom:1px solid var(--line);
+}
+h1{
+  margin:0;
+  font-family:"Playfair Display",serif;
+  font-weight:400;
+  font-size:42px;
+  letter-spacing:.02em;
+}
+.sub{
+  margin:10px 0 0;
+  max-width:640px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.right-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-end;
+}
+.pill{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.pill strong{ color:var(--ink); font-weight:500; }
+
+/* ====== TABS ====== */
+.tabs{
+  margin-top:24px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.tab{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.tab[aria-selected="true"]{
+  border-color:#d8d8d8;
+  box-shadow:0 10px 24px rgba(0,0,0,.06);
+}
+.tab:hover{ background:var(--soft); }
+
+.grid{
+  margin-top:24px;
+  display:grid;
+  grid-template-columns: 1.35fr .9fr;
+  gap:18px;
+  align-items:start;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.card-pad{ padding:18px; }
+.card h2{
+  margin:0;
+  font-family:"Playfair Display",serif;
+  font-weight:400;
+  font-size:26px;
+}
+.card p.small{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* ====== BOOKING LIST ====== */
+.list{ margin-top:14px; }
+.booking{
+  padding:16px 0;
+  border-top:1px solid var(--line);
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  justify-content:space-between;
+}
+.booking:first-child{ border-top:none; }
+.booking-left{
+  min-width:0;
+}
+.booking-title{
+  font-family:"Playfair Display",serif;
+  font-size:18px;
+  font-weight:400;
+  margin:0;
+}
+.booking-meta{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+.kicker{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--line);
+  margin-top:-1px;
+}
+.dot.confirmed{ background:#1f7a3f; }
+.dot.rejected{ background:#b00020; }
+.dot.pending{ background:var(--gold); }
+
+.actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:flex-end;
+}
+.link-btn{
+  border:none;
+  background:none;
+  cursor:pointer;
+  padding:0;
+  color:var(--ink);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  position:relative;
+}
+.link-btn::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  height:1px;
+  width:0;
+  background:var(--ink);
+  transition:.25s ease;
+}
+.link-btn:hover::after{ width:100%; }
+.link-btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+/* ====== FORMS ====== */
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+@media (max-width: 880px){
+  .grid{ grid-template-columns:1fr; }
+  .row{ grid-template-columns:1fr; }
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+label{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+input, select{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  outline:none;
+  font-size:14px;
+}
+input:focus, select:focus{ border-color:#cfcfcf; }
+.primary{
+  margin-top:14px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.primary:hover{ filter:brightness(1.02); }
+.secondary{
+  margin-top:10px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.secondary:hover{ background:var(--soft); }
+.toast{
+  margin-top:12px;
+  font-size:13px;
+  color:var(--muted);
+  opacity:0;
+  transform:translateY(6px);
+  transition:.25s ease;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+input:focus, select:focus{ border-color:#cfcfcf; }
+.primary{
+  margin-top:14px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.primary:hover{ filter:brightness(1.02); }
+.secondary{
+  margin-top:10px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.secondary:hover{ background:var(--soft); }
+.toast{
+  margin-top:12px;
+  font-size:13px;
+  color:var(--muted);
+  opacity:0;
+  transform:translateY(6px);
+  transition:.25s ease;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+
+/* ====== SERVICE PICKER ====== */
+.service-list{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+}
+.svc{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+.svc:last-child{ border-bottom:none; }
+.svc-left{
+  min-width:0;
+}
+.svc-name{
+  font-size:14px;
+  margin:0;
+}
+.svc-meta{
+  margin:4px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+.chk{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.chk input{ width:18px; height:18px; }
+
+/* ====== AVAILABILITY ====== */
+.days{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+}
+.day{
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+.day:last-child{ border-bottom:none; }
+.day-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.day-head strong{
+  font-size:13px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-weight:500;
+}
+.switch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+.switch input{ width:18px; height:18px; }
+.day-body{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
+}
+@media (max-width: 520px){
+  .day-body{ grid-template-columns:1fr; }
+  h1{ font-size:34px; }
+}
+
+/* ====== BLOCKED SLOTS ====== */
+.blocked-list{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+}
+.blocked-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+.blocked-item:last-child{ border-bottom:none; }
+.mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ====== CHARTS ====== */
+.chart-wrap{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+canvas{ max-width:100%; }
+
+/* ====== VIEW SWITCHING ====== */
+.view{ display:none; }
+.view.active{ display:block; }
+/* ====== WELCOME BLOCK ====== */
+.welcome {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.welcome-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.welcome-label {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.welcome-name {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.welcome-meta {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+/* ===== PROFILE CARD ===== */
+.profile-box{
+  margin-top:16px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.avatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  border:1px dashed var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  background:var(--soft);
+  transition:.2s ease;
+}
+
+.avatar:hover{
+  background:#ececec;
+}
+
+.avatar-plus{
+  font-size:26px;
+  color:var(--muted);
+  line-height:1;
+}
+
+.profile-meta{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.profile-meta strong{
+  font-size:15px;
+  font-weight:500;
+  color:var(--ink);
+}
+
+.profile-meta span{
+  font-size:13px;
+  color:var(--muted);
+}
+/* ===== PROFILE CARD (IMPROVED) ===== */
+.profile-card{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.profile-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.profile-hint{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.profile-main{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--soft);
+}
+
+.avatar{
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  border:1px dashed var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  cursor:pointer;
+  transition:.25s ease;
+  flex-shrink:0;
+}
+
+.avatar:hover{
+  border-color:#cfcfcf;
+  background:#f0f0f0;
+}
+
+.avatar-plus{
+  font-size:28px;
+  color:var(--muted);
+  line-height:1;
+}
+
+.profile-meta{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.profile-name{
+  font-family:"Playfair Display", serif;
+  font-size:20px;
+  font-weight:400;
+  color:var(--ink);
+}
+
+.profile-role{
+  font-size:13px;
+  color:var(--muted);
+  letter-spacing:.02em;
+}
+
+.profile-footer{
+  font-size:12px;
+  color:var(--muted);
+}
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <div class="brand-title">ANGELS HAIR MALL</div>
+      <div class="badge">Stylist</div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="index.html">Home</a>
+      <button class="icon-btn" id="refreshBtn" type="button">Refresh</button>
+      <button class="icon-btn" id="logoutBtn" type="button">Logout</button>
+    </div>
+  </div>
+  
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <h1>Dashboard</h1>
+      <div class="welcome">
+  <div class="welcome-line">
+    <span class="welcome-label">Welcome back</span>
+    <span class="welcome-name" id="welcomeName">—</span>
+  </div>
+  <div class="welcome-meta" id="welcomeMeta">—</div>
+</div>
+
+
+      <p class="sub">
+        Manage bookings, choose services you offer (shown to clients), and set your availability + blocked slots.
+      </p>
+    </div>
+    <div class="right-meta">
+      <div class="pill">Signed in as <strong id="whoami">—</strong></div>
+      <div class="pill">Role <strong id="rolePill">—</strong></div>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab" role="tab" aria-selected="true" data-view="bookingsView">Bookings</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="servicesView">My Services</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="availabilityView">Availability</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="analyticsView">Analytics</button>
+  </div>
+<div class="card">
+  <div class="card-pad profile-card">
+
+    <div class="profile-header">
+      <h2>Your Profile</h2>
+      <span class="profile-hint">Visible to clients</span>
+    </div>
+
+    <div class="profile-main">
+     <div class="avatar" id="profileAvatar">
+  <span class="avatar-plus">+</span>
+</div>
+
+
+      <div class="profile-meta">
+        <div class="profile-name" id="profileName">Your name</div>
+        <div class="profile-role" id="profileRole">Stylist</div>
+        
+
+      </div>
+    </div>
+
+    <div class="profile-footer">
+      <span class="profile-tip">
+        A clear photo helps clients trust and book faster.
+      </span>
+    </div>
+
+  </div>
+</div>
+
+  <!-- ===================== BOOKINGS ===================== -->
+  <div class="grid view active" id="bookingsView">
+    <div class="card">
+      <div class="card-pad">
+       <h2>My Bookings</h2>
+<p class="small">
+Here you can view and manage your upcoming appointments.
+</p>
+<p class="small">
+Confirm bookings you’re happy to take, or reject ones you can’t accommodate.
+</p>
+<p class="small">
+Clients are notified automatically when you make a change.
+</p>
+
+        <div class="list" id="bookingsList"></div>
+        <div class="toast" id="bookingsToast"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-pad">
+        <h2>Quick Actions</h2>
+        <p class="small">Keep your profile clean and up to date.</p>
+
+        <button class="secondary" id="goServicesBtn" type="button">Choose Services</button>
+        <button class="secondary" id="goAvailabilityBtn" type="button">Set Availability</button>
+        <div class="toast" id="quickToast"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SERVICES ===================== -->
+  <div class="grid view" id="servicesView">
+    <div class="card">
+      <div class="card-pad">
+        <h2>Services You Offer</h2>
+        <p class="small">
+          Select from the service options list. Only selected services appear on the client booking page.
+        </p>
+
+        <div class="row">
+          <div class="field">
+            <label>Search services</label>
+            <input id="serviceSearch" placeholder="e.g. Faux Locs, Beard Trim…" />
+          </div>
+          <div class="field">
+            <label>Category filter</label>
+            <select id="serviceCategory">
+              <option value="all">All</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="service-list" id="serviceList"></div>
+
+        <button class="primary" id="saveServicesBtn" type="button">Save Services</button>
+        <div class="toast" id="servicesToast"></div>
+
+        <!-- Data model note (for your Firebase DB):
+          /serviceOptions/{serviceId} = { name, category, price, durationMins }
+          /stylists/{uid}/services/{serviceId} = true
+        -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-pad">
+       <h2>What clients will see</h2>
+<p class="small">
+  Clients will only see the services you select here when they book with you.
+</p>
+<p class="small">
+  If a service is not selected, it will not appear on your booking page.
+</p>
+<p class="small">
+  You can update this list at any time — changes take effect immediately.
+</p>
+
+
+        <div class="chart-wrap">
+          <p class="small" style="margin:0">
+            Tip: If “Sign In…” hangs on login, it’s often because your DB rules block reading
+            <span class="mono">/users/&lt;uid&gt;</span> or <span class="mono">/stylists/&lt;uid&gt;</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== AVAILABILITY ===================== -->
+  <div class="grid view" id="availabilityView">
+    <div class="card">
+      <div class="card-pad">
+        <h2>Weekly Availability</h2>
+        <p class="small">
+          Set working hours per day and slot length. Clients can only book within enabled days/times.
+        </p>
+
+        <div class="days" id="daysContainer"></div>
+
+        <button class="primary" id="saveAvailabilityBtn" type="button">Save Availability</button>
+        <div class="toast" id="availabilityToast"></div>
+
+        <!-- Data model note:
+          /stylists/{uid}/availability/mon = { enabled, start, end, slotMins }
+        -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-pad">
+        <h2>Blocked Slots</h2>
+        <p class="small">
+          Block specific date/time slots (holidays, breaks, fully booked windows). These should be excluded on the booking page.
+        </p>
+
+        <div class="row">
+          <div class="field">
+            <label>Date</label>
+            <input id="blockDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <input id="blockTime" type="time" />
+          </div>
+        </div>
+
+        <button class="secondary" id="addBlockedBtn" type="button">Add Blocked Slot</button>
+
+        <div class="blocked-list" id="blockedList"></div>
+        <div class="toast" id="blockedToast"></div>
+
+        <!-- Data model note:
+          /stylists/{uid}/blockedSlots/2025-12-28/14:30 = true
+        -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ANALYTICS ===================== -->
+  <div class="grid view" id="analyticsView">
+    <div class="card">
+      <div class="card-pad">
+        <h2>Service Popularity</h2>
+        <p class="small">Based on your bookings.</p>
+        <div class="chart-wrap">
+          <canvas id="serviceChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-pad">
+        <h2>Monthly Bookings</h2>
+        <p class="small">Based on booking creation date.</p>
+        <div class="chart-wrap">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  update,
+  remove,
+  query,
+  orderByChild,
+  equalTo
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+import {
+  getStorage,
+  ref as sRef,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+/* ===================== FIREBASE ===================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ_6nBhOpzPBtYunilmDhcKd0Woe1PWYs",
+  authDomain: "angelshairmall.firebaseapp.com",
+  databaseURL: "https://angelshairmall-default-rtdb.firebaseio.com",
+  projectId: "angelshairmall",
+storageBucket: "angelshairmall.appspot.com",
+ messagingSenderId: "374317477500",
+  appId: "1:374317477500:web:ba6aad4bfba04a9ae6e3f9"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const storage = getStorage(app);
+
+/* ===================== DOM ===================== */
+const whoami = document.getElementById("whoami");
+const rolePill = document.getElementById("rolePill");
+
+const bookingsList = document.getElementById("bookingsList");
+const refreshBtn = document.getElementById("refreshBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const goServicesBtn = document.getElementById("goServicesBtn");
+const goAvailabilityBtn = document.getElementById("goAvailabilityBtn");
+
+const bookingsToast = document.getElementById("bookingsToast");
+const quickToast = document.getElementById("quickToast");
+const servicesToast = document.getElementById("servicesToast");
+const availabilityToast = document.getElementById("availabilityToast");
+const blockedToast = document.getElementById("blockedToast");
+
+const serviceSearch = document.getElementById("serviceSearch");
+const serviceCategory = document.getElementById("serviceCategory");
+const serviceList = document.getElementById("serviceList");
+const saveServicesBtn = document.getElementById("saveServicesBtn");
+
+const daysContainer = document.getElementById("daysContainer");
+const saveAvailabilityBtn = document.getElementById("saveAvailabilityBtn");
+
+const blockDate = document.getElementById("blockDate");
+const blockTime = document.getElementById("blockTime");
+const addBlockedBtn = document.getElementById("addBlockedBtn");
+const blockedList = document.getElementById("blockedList");
+const profileAvatar = document.getElementById("profileAvatar");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
+profileAvatar.addEventListener("click", () => {
+  profilePhotoInput.click();
+});
+profilePhotoInput.addEventListener("change", async () => {
+  const file = profilePhotoInput.files[0];
+
+  // 🔐 ALWAYS pull UID from auth at time of upload
+  const user = auth.currentUser;
+  if (!file || !user) {
+    console.warn("Upload blocked: auth not ready");
+    return;
+  }
+
+  const uid = user.uid;
+
+  // 🖼️ Instant local preview
+  const reader = new FileReader();
+  reader.onload = () => {
+    profileAvatar.style.backgroundImage = `url(${reader.result})`;
+    profileAvatar.style.backgroundSize = "cover";
+    profileAvatar.style.backgroundPosition = "center";
+    profileAvatar.innerHTML = "";
+  };
+  reader.readAsDataURL(file);
+
+  try {
+    // ☁️ Upload to Firebase Storage
+    const photoRef = sRef(
+      storage,
+      `stylistPhotos/${uid}/profile.jpg`
+    );
+
+    await uploadBytes(photoRef, file);
+    const photoURL = await getDownloadURL(photoRef);
+
+    // 🧠 Persist URL to Realtime Database
+    await update(ref(db, `users/${uid}`), {
+      photoURL,
+      updatedAt: Date.now()
+    });
+
+    console.log("✅ photoURL saved to database:", photoURL);
+    toast(quickToast, "Profile photo updated.");
+
+  } catch (err) {
+    console.error("❌ Upload failed:", err);
+    toast(
+      quickToast,
+      "Photo uploaded but could not be saved. Check database rules."
+    );
+  }
+});
+
+
+/* ===================== STATE ===================== */
+let currentStylistId = null;
+let currentUserEmail = null;
+
+let serviceOptions = [];         // [{id,name,category,price,durationMins}]
+let selectedServices = new Set(); // serviceId
+let availability = {};           // { mon:{enabled,start,end,slotMins}, ... }
+let blockedSlots = {};           // { "2025-12-28": { "14:30": true } }
+
+let serviceChartInstance = null;
+let monthlyChartInstance = null;
+
+/* ===================== UTIL ===================== */
+function toast(el, msg){
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"), 2400);
+}
+function statusDotClass(status){
+  const s = (status || "").toLowerCase();
+  if (s === "confirmed") return "confirmed";
+  if (s === "rejected") return "rejected";
+  return "pending";
+}
+function safeText(s){
+  return String(s ?? "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]));
+}
+function monthKeyFromCreatedAt(createdAt){
+  const d = new Date(createdAt || Date.now());
+  return d.toLocaleString("default", { month:"short" });
+}
+
+/* ===================== TABS ===================== */
+const tabs = Array.from(document.querySelectorAll(".tab"));
+function showView(id){
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.view === id ? "true":"false"));
+}
+tabs.forEach(t => t.addEventListener("click", ()=> showView(t.dataset.view)));
+goServicesBtn.addEventListener("click", ()=> showView("servicesView"));
+goAvailabilityBtn.addEventListener("click", ()=> showView("availabilityView"));
+
+/* ===================== AUTH GUARD ===================== */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+
+  currentStylistId = user.uid;
+  currentUserEmail = user.email || "(no email)";
+  whoami.textContent = currentUserEmail;
+
+  try {
+  const userSnap = await get(ref(db, `users/${user.uid}`));
+
+  if (!userSnap.exists()) {
+    throw new Error("User profile missing");
+  }
+
+  const userData = userSnap.val();
+  await update(ref(db, `stylists/${user.uid}/publicProfile`), {
+  name: userData.displayName || userData.name || "Stylist",
+  profession: userData.profession || userData.role || "Stylist",
+  photoURL: userData.photoURL || "",
+  updatedAt: Date.now()
+});
+
+
+if (userData.photoURL) {
+  const avatar = document.getElementById("profileAvatar");
+  avatar.style.backgroundImage = `url(${userData.photoURL})`;
+  avatar.style.backgroundSize = "cover";
+  avatar.style.backgroundPosition = "center";
+  avatar.innerHTML = "";
+}
+
+  const role = userData.role;
+  rolePill.textContent = role || "stylist";
+
+  if (role !== "stylist") {
+    window.location.href = "booking.html";
+    return;
+  }
+
+  const name = userData.displayName || "Stylist";
+  const profession = userData.profession || "Stylist";
+
+ document.getElementById("welcomeName").textContent = name;
+document.getElementById("welcomeMeta").textContent = profession;
+document.getElementById("profileName").textContent = name;
+document.getElementById("profileRole").textContent = profession;
+document.getElementById("profileName").textContent =
+  userData.displayName?.trim() || userData.name || "Stylist";
+
+document.getElementById("profileRole").textContent =
+  userData.profession || userData.role || "Stylist";
+
+  await bootstrapAll();
+  toast(quickToast, "Loaded.");
+
+} catch (e) {
+  console.error(e);
+  toast(
+    quickToast,
+    "Access blocked. Check database rules for /users/<uid> and /stylists/<uid>."
+  );
+}
+
+});
+
+logoutBtn.addEventListener("click", async ()=>{
+  try{
+    await signOut(auth);
+    window.location.href = "login.html";
+  }catch(e){
+    console.error(e);
+    toast(quickToast, "Logout failed.");
+  }
+});
+
+refreshBtn.addEventListener("click", async ()=>{
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Refreshing…";
+  await bootstrapAll();
+  refreshBtn.disabled = false;
+  refreshBtn.textContent = "Refresh";
+});
+
+/* ===================== BOOTSTRAP ===================== */
+async function bootstrapAll(){
+  await Promise.all([
+    loadBookings(),
+    loadServiceOptionsAndSelections(),
+    loadAvailability(),
+    loadBlockedSlots()
+  ]);
+  renderServicePicker();
+  renderAvailabilityUI();
+  renderBlockedUI();
+}
+
+/* ===================== BOOKINGS ===================== */
+async function loadBookings(){
+  bookingsList.innerHTML = `<div class="mono">Loading…</div>`;
+
+  try{
+    const q = query(ref(db, "bookings"), orderByChild("stylistId"), equalTo(currentStylistId));
+    const snap = await get(q);
+
+    bookingsList.innerHTML = "";
+    if (!snap.exists()){
+      bookingsList.innerHTML = `<div class="mono">No bookings yet.</div>`;
+      // also clear charts
+      renderCharts({});
+      return;
+    }
+
+    const bookings = snap.val();
+    const serviceCount = {};
+    const monthlyCount = {};
+
+    Object.entries(bookings).forEach(([id, b])=>{
+      const servicesArr = Array.isArray(b.services) ? b.services : [];
+const service =
+  servicesArr.length
+    ? servicesArr.map(s => s.name).join(" + ")
+    : (b.service || "Service");
+
+const date = b.date || "—";
+
+const time =
+  b.startTime && b.endTime
+    ? `${b.startTime} – ${b.endTime}`
+    : (b.time || "—");
+
+      const status = b.status || "pending";
+      const clientName = b.clientName || b.name || "";
+
+      if (servicesArr.length) {
+  servicesArr.forEach(s => {
+    serviceCount[s.name] = (serviceCount[s.name] || 0) + 1;
+  });
+} else {
+  serviceCount[service] = (serviceCount[service] || 0) + 1;
+}
+const durationLine =
+  b.totalDurationMins
+    ? `<br><span class="mono">${b.totalDurationMins} mins total</span>`
+    : "";
+
+const depositLine =
+  b.deposit?.paid
+    ? `<br><span class="mono">£10 deposit paid</span>`
+    : "";
+
+      const mk = monthKeyFromCreatedAt(b.createdAt);
+      monthlyCount[mk] = (monthlyCount[mk] || 0) + 1;
+
+      const wrap = document.createElement("div");
+      wrap.className = "booking";
+      wrap.innerHTML = `
+        <div class="booking-left">
+          <p class="booking-title">${safeText(service)}</p>
+          <div class="booking-meta">
+  ${safeText(date)} · ${safeText(time)}
+  ${durationLine}
+  ${depositLine}
+  ${clientName ? `<br><span class="mono">${safeText(clientName)}</span>` : ``}
+</div>
+
+          <div class="kicker">
+            <span class="dot ${statusDotClass(status)}"></span>
+            Status — ${safeText(status)}
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="link-btn" ${status==="confirmed" ? "disabled":""} data-act="confirm" data-id="${id}">Confirm</button>
+          <button class="link-btn" ${status==="rejected" ? "disabled":""} data-act="reject" data-id="${id}">Reject</button>
+        </div>
+      `;
+      bookingsList.appendChild(wrap);
+    });
+
+    // wire actions (event delegation)
+    bookingsList.querySelectorAll("button[data-act]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+        const next = act === "confirm" ? "confirmed" : "rejected";
+        btn.disabled = true;
+        try{
+          await update(ref(db, `bookings/${id}`), { status: next });
+          toast(bookingsToast, `Booking ${next}.`);
+          await loadBookings();
+        }catch(e){
+          console.error(e);
+          toast(bookingsToast, "Update blocked by DB rules.");
+        }
+      });
+    });
+
+    renderCharts({ serviceCount, monthlyCount });
+
+  }catch(e){
+    console.error(e);
+    bookingsList.innerHTML = `<div class="mono">Couldn’t load bookings (rules?).</div>`;
+    toast(bookingsToast, "Bookings read blocked.");
+  }
+}
+
+/* ===================== CHARTS ===================== */
+function renderCharts({ serviceCount = {}, monthlyCount = {} }){
+  const svcLabels = Object.keys(serviceCount);
+  const svcValues = Object.values(serviceCount);
+
+  const monthLabels = Object.keys(monthlyCount);
+  const monthValues = Object.values(monthlyCount);
+
+  const palette = ["#111111","#2a2a2a","#3d3d3d","#5a5a5a","#7b7b7b","#9a9a9a","#b5b5b5","#d0d0d0"];
+
+  if (serviceChartInstance) serviceChartInstance.destroy();
+  serviceChartInstance = new Chart(document.getElementById("serviceChart"), {
+    type:"doughnut",
+    data:{
+      labels: svcLabels,
+      datasets:[{
+        data: svcValues,
+        backgroundColor: svcValues.map((_,i)=>palette[i % palette.length]),
+        borderColor:"#ffffff",
+        borderWidth:2
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{ display: true, position:"bottom", labels:{ boxWidth:10 } }
+      },
+      cutout:"66%"
+    }
+  });
+
+  if (monthlyChartInstance) monthlyChartInstance.destroy();
+  monthlyChartInstance = new Chart(document.getElementById("monthlyChart"), {
+    type:"line",
+    data:{
+      labels: monthLabels,
+      datasets:[{
+        data: monthValues,
+        borderColor:"#111",
+        backgroundColor:"transparent",
+        pointRadius:2,
+        tension:.35
+      }]
+    },
+    options:{
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ grid:{display:false} },
+        y:{ grid:{display:false}, ticks:{ precision:0 } }
+      }
+    }
+  });
+}
+
+/* ===================== SERVICES (OPTIONS + SELECTED) ===================== */
+async function loadServiceOptionsAndSelections(){
+  // 1) Try to load service options from RTDB /serviceOptions (recommended).
+  // 2) If not present, fallback to a hardcoded list so the UI still works.
+  let options = [];
+
+  try{
+    const optSnap = await get(ref(db, "serviceOptions"));
+    if (optSnap.exists()){
+      const raw = optSnap.val();
+      options = Object.entries(raw).map(([id, v])=>({
+        id,
+        name: v.name,
+        category: v.category || "General",
+        price: v.price || "",
+        durationMins: v.durationMins || v.duration || ""
+      }));
+    }
+  }catch(e){
+    console.warn("serviceOptions read blocked or missing", e);
+  }
+
+  
+  serviceOptions = options.sort((a,b)=> (a.category+a.name).localeCompare(b.category+b.name));
+
+  // load stylist selections: /stylists/{uid}/services
+  selectedServices = new Set();
+  try{
+    const selSnap = await get(ref(db, `stylists/${currentStylistId}/services`));
+    if (selSnap.exists()){
+      Object.keys(selSnap.val()).forEach(id => selectedServices.add(id));
+    }
+  }catch(e){
+    console.warn("selected services read blocked", e);
+  }
+
+  // categories
+  const cats = Array.from(new Set(serviceOptions.map(o=>o.category))).sort();
+  serviceCategory.innerHTML = `<option value="all">All</option>` + cats.map(c=>`<option value="${safeText(c)}">${safeText(c)}</option>`).join("");
+}
+
+function renderServicePicker(){
+  const q = (serviceSearch.value || "").trim().toLowerCase();
+  const cat = serviceCategory.value;
+
+  const filtered = serviceOptions.filter(o=>{
+    const okCat = (cat === "all") || (o.category === cat);
+    const okQ = !q || (o.name || "").toLowerCase().includes(q) || (o.category || "").toLowerCase().includes(q);
+    return okCat && okQ;
+  });
+
+  serviceList.innerHTML = filtered.map(o=>{
+    const checked = selectedServices.has(o.id) ? "checked" : "";
+    const meta = [
+      o.price ? String(o.price) : null,
+      o.durationMins ? `${o.durationMins} mins` : null
+    ].filter(Boolean).join(" · ");
+
+    return `
+      <div class="svc">
+        <div class="svc-left">
+          <p class="svc-name">${safeText(o.name)}</p>
+          <p class="svc-meta">${safeText(o.category)}${meta ? ` · ${safeText(meta)}` : ""}</p>
+        </div>
+        <div class="chk">
+          <input type="checkbox" data-svc="${safeText(o.id)}" ${checked}/>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  serviceList.querySelectorAll('input[type="checkbox"][data-svc]').forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      const id = chk.dataset.svc;
+      if (chk.checked) selectedServices.add(id);
+      else selectedServices.delete(id);
+    });
+  });
+}
+
+serviceSearch.addEventListener("input", renderServicePicker);
+serviceCategory.addEventListener("change", renderServicePicker);
+
+saveServicesBtn.addEventListener("click", async () => {
+  if (!currentStylistId) return;
+
+  const payload = {};
+  selectedServices.forEach(id => {
+    payload[id] = true;
+  });
+
+  await set(ref(db, `stylists/${currentStylistId}/services`), payload);
+
+  toast(servicesToast, "Services saved.");
+});
+
+/* ===================== AVAILABILITY ===================== */
+const dayKeys = [
+  {k:"mon", name:"Monday"},
+  {k:"tue", name:"Tuesday"},
+  {k:"wed", name:"Wednesday"},
+  {k:"thu", name:"Thursday"},
+  {k:"fri", name:"Friday"},
+  {k:"sat", name:"Saturday"},
+  {k:"sun", name:"Sunday"}
+];
+
+function defaultAvailability(){
+  const obj = {};
+  dayKeys.forEach(d=>{
+    obj[d.k] = { enabled: d.k !== "sun", start:"09:00", end:"18:00", slotMins:30 };
+  });
+  return obj;
+}
+
+async function loadAvailability(){
+  availability = defaultAvailability();
+  try{
+    const snap = await get(ref(db, `stylists/${currentStylistId}/availability`));
+    if (snap.exists()){
+      const raw = snap.val();
+      dayKeys.forEach(d=>{
+        if (raw[d.k]){
+          availability[d.k] = {
+            enabled: !!raw[d.k].enabled,
+            start: raw[d.k].start || "09:00",
+            end: raw[d.k].end || "18:00",
+            slotMins: Number(raw[d.k].slotMins || 30)
+          };
+        }
+      });
+    }
+  }catch(e){
+    console.warn("availability read blocked", e);
+  }
+}
+
+function renderAvailabilityUI(){
+  daysContainer.innerHTML = dayKeys.map(d=>{
+    const v = availability[d.k] || {enabled:false,start:"09:00",end:"18:00",slotMins:30};
+    return `
+      <div class="day" data-day="${d.k}">
+        <div class="day-head">
+          <strong>${safeText(d.name)}</strong>
+          <label class="switch">
+            <input type="checkbox" data-av-enabled ${v.enabled ? "checked":""}/>
+            Enabled
+          </label>
+        </div>
+        <div class="day-body">
+          <div class="field">
+            <label>Start</label>
+            <input type="time" data-av-start value="${safeText(v.start)}" />
+          </div>
+          <div class="field">
+            <label>End</label>
+            <input type="time" data-av-end value="${safeText(v.end)}" />
+          </div>
+          <div class="field">
+            <label>Slot minutes</label>
+            <select data-av-slot>
+              ${[15,20,30,45,60].map(n=>`<option value="${n}" ${Number(v.slotMins)===n?"selected":""}>${n}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  daysContainer.querySelectorAll(".day").forEach(dayEl=>{
+    const k = dayEl.dataset.day;
+    const enabledEl = dayEl.querySelector("[data-av-enabled]");
+    const startEl = dayEl.querySelector("[data-av-start]");
+    const endEl = dayEl.querySelector("[data-av-end]");
+    const slotEl = dayEl.querySelector("[data-av-slot]");
+
+    const apply = ()=>{
+      availability[k] = {
+        enabled: !!enabledEl.checked,
+        start: startEl.value || "09:00",
+        end: endEl.value || "18:00",
+        slotMins: Number(slotEl.value || 30)
+      };
+    };
+    enabledEl.addEventListener("change", apply);
+    startEl.addEventListener("change", apply);
+    endEl.addEventListener("change", apply);
+    slotEl.addEventListener("change", apply);
+  });
+}
+
+saveAvailabilityBtn.addEventListener("click", async ()=>{
+  saveAvailabilityBtn.disabled = true;
+  saveAvailabilityBtn.textContent = "Saving…";
+
+  // basic validation
+  for (const d of dayKeys){
+    const v = availability[d.k];
+    if (!v) continue;
+    if (v.enabled && v.start >= v.end){
+      toast(availabilityToast, `${d.name}: start must be before end.`);
+      saveAvailabilityBtn.disabled = false;
+      saveAvailabilityBtn.textContent = "Save Availability";
+      return;
+    }
+  }
+
+  try{
+   await update(ref(db, `stylists/${currentStylistId}`), {
+  availability,
+  updatedAt: Date.now()
+});
+
+    toast(availabilityToast, "Availability saved.");
+  }catch(e){
+    console.error(e);
+    toast(availabilityToast, "Save blocked by DB rules.");
+  }finally{
+    saveAvailabilityBtn.disabled = false;
+    saveAvailabilityBtn.textContent = "Save Availability";
+  }
+});
+
+/* ===================== BLOCKED SLOTS ===================== */
+async function loadBlockedSlots(){
+  blockedSlots = {};
+  blockedList.innerHTML = `<div class="mono">Loading…</div>`;
+  try{
+    const snap = await get(ref(db, `stylists/${currentStylistId}/blockedSlots`));
+    if (snap.exists()) blockedSlots = snap.val() || {};
+  }catch(e){
+    console.warn("blockedSlots read blocked", e);
+  }
+}
+
+function renderBlockedUI(){
+  const entries = [];
+  Object.keys(blockedSlots || {}).forEach(date=>{
+    const timesObj = blockedSlots[date] || {};
+    Object.keys(timesObj).forEach(time=>{
+      if (timesObj[time]) entries.push({date, time});
+    });
+  });
+  entries.sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+
+  if (!entries.length){
+    blockedList.innerHTML = `<div class="mono">No blocked slots.</div>`;
+    return;
+  }
+
+  blockedList.innerHTML = entries.map(x=>`
+    <div class="blocked-item">
+      <div>
+        <div><strong>${safeText(x.date)}</strong> · <span class="mono">${safeText(x.time)}</span></div>
+        <div class="mono">Blocked</div>
+      </div>
+      <button class="link-btn" data-unblock="${safeText(x.date)}|${safeText(x.time)}">Remove</button>
+    </div>
+  `).join("");
+
+  blockedList.querySelectorAll("button[data-unblock]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const [date, time] = btn.dataset.unblock.split("|");
+      btn.disabled = true;
+      try{
+        await remove(ref(db, `stylists/${currentStylistId}/blockedSlots/${date}/${time}`));
+        toast(blockedToast, "Blocked slot removed.");
+        await loadBlockedSlots();
+        renderBlockedUI();
+      }catch(e){
+        console.error(e);
+        toast(blockedToast, "Remove blocked by DB rules.");
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+addBlockedBtn.addEventListener("click", async ()=>{
+  const d = blockDate.value;
+  const t = blockTime.value;
+
+  if (!d || !t){
+    toast(blockedToast, "Choose a date and time.");
+    return;
+  }
+
+  addBlockedBtn.disabled = true;
+  addBlockedBtn.textContent = "Adding…";
+  try{
+    await update(ref(db, `stylists/${currentStylistId}/blockedSlots/${d}`), {
+  [t]: true
+});
+
+    toast(blockedToast, "Blocked slot added.");
+    blockTime.value = "";
+    await loadBlockedSlots();
+    renderBlockedUI();
+  }catch(e){
+    console.error(e);
+    toast(blockedToast, "Add blocked by DB rules.");
+  }finally{
+    addBlockedBtn.disabled = false;
+    addBlockedBtn.textContent = "Add Blocked Slot";
+  }
+});
+
+/* ===================== NAV HELPERS ===================== */
+serviceSearch.addEventListener("keydown", (e)=>{
+  if (e.key === "Escape") serviceSearch.value = "";
+});
+profileAvatar.addEventListener("click", () => {
+  if (!auth.currentUser) {
+    toast(quickToast, "Please wait — signing you in.");
+    return;
+  }
+  profilePhotoInput.click();
+});
+
+</script>
+
+<!--
+==================== IMPORTANT: RTDB RULES (so login/redirect doesn’t hang) ====================
+If your login shows “Signing in…” forever, it’s usually because this dashboard (and your login page)
+can’t read:
+  /users/<uid>/role
+or can’t read stylist data paths.
+
+A solid starting point (tight but workable) is:
+
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+
+    "stylists": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+
+        "services": { ".read": "auth != null", ".write": "auth != null && auth.uid === $uid" },
+        "availability": { ".read": "auth != null", ".write": "auth != null && auth.uid === $uid" },
+        "blockedSlots": { ".read": "auth != null", ".write": "auth != null && auth.uid === $uid" }
+      }
+    },
+
+    "serviceOptions": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+
+    "bookings": {
+      ".read": "auth != null",
+      "$bid": {
+        ".write": "auth != null && (
+          data.child('stylistId').val() === auth.uid ||
+          newData.child('stylistId').val() === auth.uid
+        )"
+      }
+    }
+  }
+}
+
+You can tighten/expand later (for public booking, allow read of selected stylist services/availability to clients).
+-->
+<input
+  type="file"
+  id="profilePhotoInput"
+  accept="image/*"
+  style="display:none"
+/>
+
+</body>
+</html>
+

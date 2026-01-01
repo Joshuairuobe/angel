@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Booking — Angels Hair Mall</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#ffffff;
+  --ink:#0b0b0b;
+  --muted:#6f6f6f;
+  --line:#e9e9e9;
+  --soft:#f7f7f7;
+  --card:#ffffff;
+  --shadow: 0 18px 50px rgba(0,0,0,.06);
+  --radius: 18px;
+  --gold:#b38b2e;
+  --danger:#b00020;
+  --ok:#1f7a3f;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  letter-spacing:.01em;
+}
+
+/* ====== HEADER ====== */
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(130%) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  max-width:1440px;
+  margin:0 auto;
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:240px;
+}
+.brand-title{
+  font-family:"Playfair Display",serif;
+  font-weight:500;
+  letter-spacing:.18em;
+  font-size:14px;
+  text-transform:uppercase;
+}
+.badge{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:6px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+}
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav a{
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--ink);
+  padding:10px 10px;
+  border-radius:10px;
+}
+.nav a:hover{ background:var(--soft); }
+.icon-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 12px;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.icon-btn:hover{ border-color:#d8d8d8; }
+.icon-btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* ====== LAYOUT ====== */
+.wrap{
+  max-width:1440px;
+  margin:0 auto;
+  padding:34px 24px 80px;
+}
+.hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  padding:22px 0 26px;
+  border-bottom:1px solid var(--line);
+}
+h1{
+  margin:0;
+  font-family:"Playfair Display",serif;
+  font-weight:400;
+  font-size:42px;
+  letter-spacing:.02em;
+}
+.sub{
+  margin:10px 0 0;
+  max-width:760px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.right-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-end;
+}
+.pill{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.pill strong{ color:var(--ink); font-weight:500; }
+
+/* ====== GRID ====== */
+.grid{
+  margin-top:24px;
+  display:grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap:18px;
+  align-items:start;
+}
+@media (max-width: 980px){
+  .grid{ grid-template-columns:1fr; }
+}
+
+/* ====== CARD ====== */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.card-pad{ padding:18px; }
+.card h2{
+  margin:0;
+  font-family:"Playfair Display",serif;
+  font-weight:400;
+  font-size:26px;
+}
+.small{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* ====== FORM ====== */
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+@media (max-width: 620px){
+  .row{ grid-template-columns:1fr; }
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+label{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+input, select{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  outline:none;
+  font-size:14px;
+}
+input:focus, select:focus{ border-color:#cfcfcf; }
+
+.primary{
+  margin-top:14px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.primary:hover{ filter:brightness(1.02); }
+.primary:disabled{ opacity:.6; cursor:not-allowed; }
+
+.secondary{
+  margin-top:10px;
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  cursor:pointer;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.secondary:hover{ background:var(--soft); }
+.secondary:disabled{ opacity:.6; cursor:not-allowed; }
+
+.toast{
+  margin-top:12px;
+  font-size:13px;
+  color:var(--muted);
+  opacity:0;
+  transform:translateY(6px);
+  transition:.25s ease;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+
+/* ====== SERVICE LIST ====== */
+.service-tools{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: 1fr .8fr;
+  gap:12px;
+}
+@media (max-width: 620px){
+  .service-tools{ grid-template-columns:1fr; }
+}
+.service-list{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+}
+.service-item{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.service-item:last-child{ border-bottom:none; }
+.service-item:hover{ background:linear-gradient(to right, rgba(179,139,46,.06), transparent); }
+.service-left{ min-width:0; }
+.service-name{
+  margin:0;
+  font-size:14px;
+  font-weight:500;
+}
+.service-meta{
+  margin:6px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+.px{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  color:var(--muted);
+}
+.service-pick{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.service-pill{
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.service-item[aria-selected="true"]{
+  background:var(--soft);
+}
+.service-item[aria-selected="true"] .service-pill{
+  border-color:#d8d8d8;
+  color:var(--ink);
+}
+
+/* ====== STYLIST PICKER ====== */
+.stylist-grid{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:12px;
+}
+@media (max-width: 620px){
+  .stylist-grid{ grid-template-columns:1fr; }
+}
+.sty-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  transition:.2s ease;
+}
+.sty-card:hover{ background:var(--soft); }
+.sty-card[aria-selected="true"]{
+  border-color:#d8d8d8;
+  box-shadow:0 10px 24px rgba(0,0,0,.06);
+}
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  background:var(--soft);
+  border:1px solid var(--line);
+  flex-shrink:0;
+  background-size:cover;
+  background-position:center;
+}
+.sty-meta{ min-width:0; }
+.sty-name{
+  margin:0;
+  font-size:13px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.sty-prof{
+  margin:4px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ====== TIME SLOTS ====== */
+.time-slots{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:10px;
+}
+@media (max-width: 620px){
+  .time-slots{ grid-template-columns: repeat(3, 1fr); }
+}
+.time-btn{
+  padding:11px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  font-size:12px;
+  cursor:pointer;
+}
+.time-btn:hover{ background:var(--soft); }
+.time-btn.active{
+  border-color:#d8d8d8;
+  background:var(--ink);
+  color:#fff;
+}
+.time-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* ====== SUMMARY / PAYMENT ====== */
+.summary{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+  display:grid;
+  gap:10px;
+}
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:13px;
+  color:var(--muted);
+}
+.summary-row strong{ color:var(--ink); font-weight:600; }
+.gold{ color:var(--gold); }
+
+/* ====== APPOINTMENTS ====== */
+.appt-list{ margin-top:14px; border-top:1px solid var(--line); }
+.appt{
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.appt:last-child{ border-bottom:none; }
+.appt-title{
+  margin:0;
+  font-family:"Playfair Display",serif;
+  font-size:18px;
+  font-weight:400;
+}
+.appt-meta{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--line);
+}
+.dot.pending{ background:var(--gold); }
+.dot.confirmed{ background:var(--ok); }
+.dot.cancelled{ background:var(--danger); }
+
+.link-btn{
+  border:none;
+  background:none;
+  cursor:pointer;
+  padding:0;
+  color:var(--ink);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  position:relative;
+  white-space:nowrap;
+}
+.link-btn::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  height:1px;
+  width:0;
+  background:var(--ink);
+  transition:.25s ease;
+}
+.link-btn:hover::after{ width:100%; }
+.link-btn.danger{ color:var(--danger); }
+.link-btn.danger::after{ background:var(--danger); }
+.link-btn:disabled{ opacity:.5; cursor:not-allowed; }
+/* ====== STYLIST UNAVAILABLE ====== */
+.sty-card.unavailable {
+  border-color: #b00020;
+  background: rgba(176, 0, 32, 0.04);
+}
+
+.sty-card.unavailable .sty-name {
+  color: #b00020;
+}
+
+.sty-card.unavailable::after {
+  content: "Unavailable";
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #b00020;
+}
+
+/* ===================== MOBILE UX IMPROVEMENTS ===================== */
+@media (max-width: 620px){
+
+  /* Reduce header height */
+  .nav{
+    padding:14px 18px;
+  }
+
+  /* Stack service tools cleanly */
+  .service-tools{
+    grid-template-columns:1fr;
+  }
+
+  /* One stylist per row (clear & tappable) */
+  .stylist-grid{
+    grid-template-columns:1fr;
+  }
+
+  /* Slightly larger avatars for trust */
+  .avatar{
+    width:52px;
+    height:52px;
+  }
+
+  /* Time slots: easier tapping */
+  .time-slots{
+    grid-template-columns:repeat(2, 1fr);
+  }
+
+  /* Sticky booking summary (Booksy-style) */
+  .summary{
+    position:sticky;
+    bottom:0;
+    background:#fff;
+    padding:14px 0 18px;
+    border-top:1px solid var(--line);
+    z-index:5;
+  }
+
+  /* Bigger tap targets for payment */
+  .primary,
+  .secondary{
+    padding:14px 16px;
+    font-size:12px;
+  }
+
+  /* Appointment cards spacing */
+  .appt{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+  }
+
+  .appt > div:last-child{
+    align-self:flex-end;
+  }
+}
+
+/* Extra safety for very small phones */
+@media (max-width: 420px){
+
+  h1{
+    font-size:32px;
+  }
+
+  .time-slots{
+    grid-template-columns:1fr;
+  }
+}
+.sty-card.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <div class="brand-title">ANGELS HAIR MALL</div>
+      <div class="badge">Booking</div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="index.html">Home</a>
+      <button class="icon-btn" id="refreshBtn" type="button">Refresh</button>
+      <button class="icon-btn" id="logoutBtn" type="button">Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Book</h1>
+      <p class="sub">
+        Choose a service, pick a stylist, then select an available date & time. A <span class="gold">£10 deposit</span> reserves your appointment and comes off the final price.
+      </p>
+    </div>
+    <div class="right-meta">
+      <div class="pill">Signed in as <strong id="whoami">—</strong></div>
+      <div class="pill">Deposit <strong>£10</strong></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: BOOKING FLOW -->
+    <div class="card">
+      <div class="card-pad">
+        <h2>Appointment</h2>
+        
+         
+
+        <!-- Service picker -->
+        <div class="service-tools">
+          <div class="field">
+            <label>Search</label>
+            <input id="serviceSearch" placeholder="e.g. Beard Trim, Faux Locs…" />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="serviceCategory">
+              <option value="all">All</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="service-list" id="serviceList"></div>
+        <div class="toast" id="serviceToast"></div>
+
+        <!-- Stylist picker -->
+        <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:14px;">
+          <label>Pick a stylist</label>
+          <div class="stylist-grid" id="stylistGrid"></div>
+          <div class="toast" id="stylistToast"></div>
+        </div>
+
+        <!-- Date & time -->
+        <div class="row" style="margin-top:14px;">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="dateSelect" />
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <select id="timeSelect" disabled>
+              <option value="">Select a time</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="time-slots" id="timeSlots"></div>
+        <div class="toast" id="timeToast"></div>
+
+        <!-- Summary + "Payment" -->
+        <div class="summary" id="summaryBox" style="display:none;">
+          <div class="summary-row"><span>Service</span><strong id="sumService">—</strong></div>
+          <div class="summary-row"><span>Stylist</span><strong id="sumStylist">—</strong></div>
+          <div class="summary-row"><span>Date & time</span><strong id="sumDateTime">—</strong></div>
+          <div class="summary-row"><span>Price</span><strong id="sumPrice">—</strong></div>
+          <div class="summary-row"><span>Deposit (now)</span><strong class="gold">£10</strong></div>
+          <div class="summary-row"><span>Remaining (after service)</span><strong id="sumRemaining">—</strong></div>
+            <div id="payment-request-button"></div>
+
+          <button class="primary" id="payBtn" type="button">Pay £10 deposit (Apple Pay / Google Pay)</button>
+          <button class="secondary" id="bookWithoutPayBtn" type="button" title="Use only for testing.">Create booking (no deposit) — test</button>
+          <div class="toast" id="payToast"></div>
+
+          <p class="small" style="margin-top:6px;">
+            Payment note: Apple Pay / Google Pay normally requires Stripe Payment Request (server-side). This button currently simulates a successful deposit and writes <span class="px">depositPaid:true</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SELECTED STYLIST + MY APPOINTMENTS -->
+    <div style="display:grid; gap:18px;">
+      <div class="card">
+        <div class="card-pad">
+          <h2>Selected stylist</h2>
+          
+          <div style="margin-top:14px; display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--soft);">
+            <div class="avatar" id="selectedAvatar"></div>
+            <div style="min-width:0;">
+              <p class="sty-name" id="selectedName">—</p>
+              <p class="sty-prof" id="selectedProf">—</p>
+            </div>
+          </div>
+
+          <div class="small" style="margin-top:10px;">
+           
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-pad">
+          <h2>My Appointments</h2>
+          <p class="small">View your bookings and cancel when needed.</p>
+          <div class="appt-list" id="appointmentsList"></div>
+          <div class="toast" id="apptToast"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  get,
+  push,
+  set,
+  update,
+  query,
+  orderByChild,
+  equalTo
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+/* ===================== FIREBASE ===================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ_6nBhOpzPBtYunilmDhcKd0Woe1PWYs",
+  authDomain: "angelshairmall.firebaseapp.com",
+  databaseURL: "https://angelshairmall-default-rtdb.firebaseio.com",
+  projectId: "angelshairmall",
+  messagingSenderId: "374317477500",
+  appId: "1:374317477500:web:ba6aad4bfba04a9ae6e3f9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+// 🔑 Stripe public key (SAFE to expose)
+const stripe = Stripe("pk_live_51SkneWQkvnsyusGCP5IiT0vWgpDPyDuUvqc9ZhDYwOwJXmMI1xCzV06QenPHRBMyc4Xfm8GqM3CBEVgOPMyVlHGC00aZkTk5Ve");
+
+/* ===================== DOM ===================== */
+const whoami = document.getElementById("whoami");
+const refreshBtn = document.getElementById("refreshBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const serviceSearch = document.getElementById("serviceSearch");
+const serviceCategory = document.getElementById("serviceCategory");
+const serviceList = document.getElementById("serviceList");
+const stylistGrid = document.getElementById("stylistGrid");
+
+const dateSelect = document.getElementById("dateSelect");
+const timeSelect = document.getElementById("timeSelect");
+const timeSlots = document.getElementById("timeSlots");
+
+const serviceToast = document.getElementById("serviceToast");
+const stylistToast = document.getElementById("stylistToast");
+const timeToast = document.getElementById("timeToast");
+const payToast = document.getElementById("payToast");
+const apptToast = document.getElementById("apptToast");
+
+const summaryBox = document.getElementById("summaryBox");
+const sumService = document.getElementById("sumService");
+const sumStylist = document.getElementById("sumStylist");
+const sumDateTime = document.getElementById("sumDateTime");
+const sumPrice = document.getElementById("sumPrice");
+const sumRemaining = document.getElementById("sumRemaining");
+const payBtn = document.getElementById("payBtn");
+const bookWithoutPayBtn = document.getElementById("bookWithoutPayBtn");
+
+const selectedAvatar = document.getElementById("selectedAvatar");
+const selectedName = document.getElementById("selectedName");
+const selectedProf = document.getElementById("selectedProf");
+
+const appointmentsList = document.getElementById("appointmentsList");
+
+/* ===================== STATE ===================== */
+let currentUser = null;
+
+let serviceOptions = []; // [{id,name,category,price,durationMins}]
+let stylistsIndex = {};  // uid -> { services: {id:true}, availability, blockedSlots ... }  (from /stylists)
+     // uid -> { displayName, profession, photoURL } (from /users)
+let usersIndex = {}; // uid -> publicProfile
+
+let selectedServices = []; // [{id,name,price,durationMins,category}]
+
+let selectedStylistId = null;
+let selectedTime = null;
+
+const DEPOSIT = 10;
+
+/* ===================== UTIL ===================== */
+function isDayAvailableForStylist(dateISO){
+  if (!selectedStylistId) return false;
+  const av = stylistsIndex[selectedStylistId]?.availability;
+  if (!av) return false;
+  const dayKey = dayKeyFromDateISO(dateISO);
+  return !!av[dayKey]?.enabled;
+}
+
+function toast(el, msg){
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"), 2400);
+}
+function safeText(s){
+  return String(s ?? "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]));
+}
+function money(n){
+  const num = Number(n || 0);
+  if (!Number.isFinite(num)) return "£0";
+  return `£${num.toFixed(2).replace(/\.00$/,"")}`;
+}
+function dayKeyFromDateISO(dateISO){
+  // dateISO = YYYY-MM-DD
+  const d = new Date(dateISO + "T00:00:00");
+  const map = ["sun","mon","tue","wed","thu","fri","sat"];
+  return map[d.getDay()];
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+function addMinsToTime(timeHHMM, mins){
+  const [h,m] = timeHHMM.split(":").map(Number);
+  const total = h*60 + m + mins;
+  const nh = Math.floor(total/60);
+  const nm = total%60;
+  return `${pad2(nh)}:${pad2(nm)}`;
+}
+function timeLess(a,b){
+  // a,b in HH:MM
+  return (a.localeCompare(b) < 0);
+}
+function statusDot(status){
+  const s = (status||"").toLowerCase();
+  if (s === "confirmed") return "confirmed";
+  if (s === "cancelled") return "cancelled";
+  return "pending";
+}
+function totalDuration(){
+  return selectedServices.reduce((sum, s) => sum + (s.durationMins || 0), 0);
+}
+function totalPrice(){
+  return selectedServices.reduce((sum, s) => sum + (s.price || 0), 0);
+}
+function isStylistAvailableOnDate(uid, dateISO){
+  const av = stylistsIndex[uid]?.availability;
+  if (!av || !dateISO) return false;
+  const dayKey = dayKeyFromDateISO(dateISO);
+  return !!av[dayKey]?.enabled;
+}
+/* ===================== STRIPE ===================== */
+
+async function setupPaymentRequest() {
+  const pr = stripe.paymentRequest({
+    country: "GB",
+    currency: "gbp",
+    total: {
+      label: "Appointment Deposit",
+      amount: 1000 // £10
+    },
+    requestPayerName: true,
+    requestPayerEmail: true
+  });
+
+  const result = await pr.canMakePayment();
+  if (!result) {
+    console.log("Apple Pay / Google Pay not available");
+    return;
+  }
+
+  const elements = stripe.elements();
+  const prButton = elements.create("paymentRequestButton", {
+    paymentRequest: pr
+  });
+
+  prButton.mount("#payment-request-button");
+
+  // Hide fake button once Stripe is ready
+  payBtn.style.display = "none";
+
+  pr.on("paymentmethod", async (ev) => {
+    try {
+      const res = await fetch(
+        "https://us-central1-angelshairmall.cloudfunctions.net/createPaymentIntent",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: 1000 })
+        }
+      );
+
+      const { clientSecret } = await res.json();
+
+      const { error } = await stripe.confirmCardPayment(
+        clientSecret,
+        { payment_method: ev.paymentMethod.id },
+        { handleActions: false }
+      );
+
+      if (error) {
+        ev.complete("fail");
+        toast(payToast, "Payment failed.");
+        return;
+      }
+
+      ev.complete("success");
+
+      // ✅ ONLY after payment succeeds
+      await createBooking({ depositPaid: true });
+
+    } catch (err) {
+      console.error(err);
+      ev.complete("fail");
+      toast(payToast, "Payment error.");
+    }
+  });
+}
+
+/* ===================== AUTH ===================== */
+onAuthStateChanged(auth, async user => {
+  if (!user) return window.location.href = "login.html";
+  currentUser = user;
+  whoami.textContent = user.email || "(no email)";
+
+  await bootstrap();
+});
+
+/* ===================== BOOTSTRAP ===================== */
+async function bootstrap(){
+  await Promise.all([
+    loadServiceOptions(),
+    loadStylistsIndex()
+  ]);
+
+  buildCategoryFilter();
+  renderServices();
+  renderStylists();
+  resetDateTime();
+  await loadAppointments();
+}
+
+
+refreshBtn.addEventListener("click", async ()=>{
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Refreshing…";
+  await bootstrap();
+  refreshBtn.disabled = false;
+  refreshBtn.textContent = "Refresh";
+});
+
+logoutBtn.addEventListener("click", async ()=>{
+  try{
+    await signOut(auth);
+    window.location.href = "login.html";
+  }catch(e){
+    console.error(e);
+  }
+});
+async function loadUsersIndex(){
+  try{
+    const snap = await get(ref(db, "stylists"));
+    const raw = snap.val() || {};
+
+    usersIndex = {};
+    Object.entries(raw).forEach(([uid, stylist]) => {
+      if (stylist.publicProfile) {
+        usersIndex[uid] = stylist.publicProfile;
+      }
+    });
+
+  }catch(e){
+    console.warn("Failed to load stylist public profiles", e);
+    usersIndex = {};
+  }
+}
+
+/* ===================== LOAD DATA ===================== */
+async function loadServiceOptions(){
+  // /serviceOptions recommended
+  let options = [];
+  try{
+    const snap = await get(ref(db, "serviceOptions"));
+    if (snap.exists()){
+      const raw = snap.val();
+      options = Object.entries(raw).map(([id,v])=>({
+        id,
+        name: v.name || "Service",
+        category: v.category || "General",
+        price: Number(v.price || 0),
+        durationMins: Number(v.durationMins || v.duration || 0)
+      }));
+    }
+  }catch(e){
+    console.warn("serviceOptions read blocked / missing", e);
+  }
+
+  // fallback (keeps UI working)
+  
+
+  serviceOptions = options.sort((a,b)=> (a.category+a.name).localeCompare(b.category+b.name));
+}
+
+async function loadStylistsIndex(){
+  try{
+    const snap = await get(ref(db, "stylists"));
+    stylistsIndex = snap.val() || {};
+  }catch(e){
+    console.warn("stylists read blocked", e);
+    stylistsIndex = {};
+  }
+}
+function getPublicProfile(uid){
+  return stylistsIndex[uid]?.publicProfile || {};
+}
+
+
+
+/* ===================== SERVICES UI ===================== */
+function buildCategoryFilter(){
+  const cats = Array.from(new Set(serviceOptions.map(s=>s.category))).sort();
+  serviceCategory.innerHTML = `<option value="all">All</option>` + cats.map(c=>`<option value="${safeText(c)}">${safeText(c)}</option>`).join("");
+}
+
+function renderServices(){
+  const q = (serviceSearch.value || "").trim().toLowerCase();
+  const cat = serviceCategory.value;
+
+  const filtered = serviceOptions.filter(s=>{
+    const okCat = (cat === "all") || (s.category === cat);
+    const okQ = !q || (s.name||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q);
+    return okCat && okQ;
+  });
+
+  serviceList.innerHTML = filtered.map(s=>{
+   const selected = selectedServices.some(x => x.id === s.id);
+
+    const meta = [
+      s.category,
+      s.durationMins ? `${s.durationMins} mins` : null
+    ].filter(Boolean).join(" · ");
+
+    return `
+      <div class="service-item" role="button" tabindex="0" data-svc="${safeText(s.id)}" aria-selected="${selected ? "true":"false"}">
+        <div class="service-left">
+          <p class="service-name">${safeText(s.name)}</p>
+          <p class="service-meta">${safeText(meta)}</p>
+        </div>
+        <div class="service-pick">
+          <span class="service-pill">${safeText(money(s.price))}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  serviceList.querySelectorAll("[data-svc]").forEach(el=>{
+    const pick = ()=>{
+  const svc = serviceOptions.find(x => x.id === el.dataset.svc);
+  if (!svc) return;
+
+  const exists = selectedServices.some(x => x.id === svc.id);
+
+  if (exists) {
+    selectedServices = selectedServices.filter(x => x.id !== svc.id);
+  } else {
+    selectedServices.push(svc);
+  }
+
+  selectedStylistId = null;
+  selectedTime = null;
+
+  resetDateTime();
+  renderServices();
+  renderStylists();
+  renderSummary();
+};
+
+    el.addEventListener("click", pick);
+    el.addEventListener("keydown", (e)=>{ if (e.key==="Enter" || e.key===" ") pick(); });
+    
+  });
+
+  if (!filtered.length){
+    toast(serviceToast, "No services match your search.");
+  }
+}
+
+serviceSearch.addEventListener("input", renderServices);
+serviceCategory.addEventListener("change", renderServices);
+
+/* ===================== STYLISTS UI (filtered by selected service) ===================== */
+function renderStylists() {
+  stylistGrid.innerHTML = "";
+
+  if (!selectedServices.length) {
+    stylistGrid.innerHTML =
+      `<div class="px">Select a service to see stylists.</div>`;
+    return;
+  }
+
+  const allStylists = Object.keys(stylistsIndex || {});
+
+  if (!allStylists.length) {
+    stylistGrid.innerHTML =
+      `<div class="px">No stylists available.</div>`;
+    return;
+  }
+
+  // 🔒 Only stylists who offer ALL selected services
+  const matchingStylists = allStylists.filter(uid => {
+    const stylist = stylistsIndex[uid];
+    return selectedServices.every(s =>
+      stylist?.services?.[s.id] === true
+    );
+  });
+
+  if (!matchingStylists.length) {
+    stylistGrid.innerHTML =
+      `<div class="px">No stylists offer this service.</div>`;
+    return;
+  }
+
+  const dateISO = dateSelect.value;
+
+  stylistGrid.innerHTML = matchingStylists.map(uid => {
+    const profile = stylistsIndex[uid]?.publicProfile || {};
+
+    const name = profile.name || "Stylist";
+    const profession = profile.profession || "Stylist";
+    const photoURL = profile.photoURL || "";
+
+    const available =
+      !dateISO || isStylistAvailableOnDate(uid, dateISO);
+
+    const selected = uid === selectedStylistId;
+
+    return `
+      <div class="sty-card
+                  ${selected ? "selected" : ""}
+                  ${available ? "" : "disabled unavailable"}"
+           data-sty="${uid}"
+           aria-selected="${selected}">
+        <div class="avatar"
+             style="${photoURL ? `background-image:url('${photoURL}')` : ""}">
+        </div>
+        <div class="sty-meta">
+          <p class="sty-name">${name}</p>
+          <p class="sty-prof">${profession}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // ✅ Click handling (only for AVAILABLE stylists)
+  stylistGrid.querySelectorAll(".sty-card:not(.disabled)").forEach(card => {
+    card.addEventListener("click", () => {
+      selectedStylistId = card.dataset.sty;
+      selectedTime = null;
+
+      resetDateTime(true);
+      renderStylists();
+      syncSelectedStylistCard();
+      renderSummary();
+
+      if (dateSelect.value) {
+        renderAvailableTimes();
+      }
+    });
+  });
+}
+
+function syncSelectedStylistCard(){
+  if (!selectedStylistId){
+    selectedAvatar.style.backgroundImage = "";
+    selectedName.textContent = "—";
+    selectedProf.textContent = "—";
+    return;
+  }
+  const u = getPublicProfile(selectedStylistId);
+
+  const name = u.displayName?.trim() || u.name || "Stylist";
+  const prof = u.profession || u.role || "Stylist";
+
+  selectedName.textContent = name;
+  selectedProf.textContent = prof;
+  selectedAvatar.style.backgroundImage = u.photoURL ? `url('${u.photoURL}')` : "";
+}
+
+/* ===================== DATE & TIME ===================== */
+function resetDateTime(keepDate=false){
+  timeSlots.innerHTML = "";
+  timeSelect.innerHTML = `<option value="">Select a time</option>`;
+  timeSelect.disabled = true;
+  selectedTime = null;
+
+  if (!keepDate) dateSelect.value = "";
+}
+
+dateSelect.addEventListener("change", async ()=>{
+  selectedTime = null;
+  timeSlots.innerHTML = "";
+  timeSelect.innerHTML = `<option value="">Select a time</option>`;
+  timeSelect.disabled = true;
+
+  if (!selectedServices.length)
+    return toast(timeToast, "Select a service first.");
+
+  if (!selectedStylistId)
+    return toast(timeToast, "Select a stylist first.");
+
+  if (!dateSelect.value) return;
+
+  if (!isDayAvailableForStylist(dateSelect.value)){
+    dateSelect.value = "";
+    toast(timeToast, "Stylist is not available on that day.");
+    return;
+  }
+renderStylists();
+
+  await renderAvailableTimes();
+});
+
+
+async function renderAvailableTimes(){
+  try{
+    const dateISO = dateSelect.value;
+    const dayKey = dayKeyFromDateISO(dateISO);
+
+    const [avSnap, blockedSnap, bookingsSnap] = await Promise.all([
+      get(ref(db, `stylists/${selectedStylistId}/availability/${dayKey}`)),
+      get(ref(db, `stylists/${selectedStylistId}/blockedSlots/${dateISO}`)),
+      get(query(ref(db, "bookings"), orderByChild("stylistId"), equalTo(selectedStylistId)))
+    ]);
+
+    const av = avSnap.exists() ? (avSnap.val() || {}) : null;
+    if (!av || !av.enabled){
+      timeSlots.innerHTML = `<div class="px">No availability for this day.</div>`;
+      timeSelect.disabled = true;
+      toast(timeToast, "No availability for that date.");
+      return;
+    }
+
+    // ✅ DEFINE needed BEFORE USING IT
+    const needed = totalDuration();
+    if (!needed || needed <= 0){
+      timeSlots.innerHTML = `<div class="px">Selected service has no duration set.</div>`;
+      timeSelect.disabled = true;
+      toast(timeToast, "Selected service has no duration set.");
+      return;
+    }
+const normalizeTime = t =>
+  t.includes(":") ? t : `${t.padStart(2, "0")}:00`;
+
+const start = normalizeTime(av.start || "09:00");
+const end   = normalizeTime(av.end   || "18:00");
+
+    const slotMins = Number(av.slotMins || 30);
+
+    // blocked slots
+    const blockedObj = blockedSnap.exists() ? (blockedSnap.val() || {}) : {};
+    const blockedTimes = new Set(Object.keys(blockedObj).filter(t => blockedObj[t]));
+
+    // booked slots
+    const bookedTimes = new Set();
+    if (bookingsSnap.exists()){
+      Object.values(bookingsSnap.val()).forEach(b=>{
+        if (b.date !== dateISO) return;
+        const st = (b.status || "pending").toLowerCase();
+        if (st === "cancelled" || st === "rejected") return;
+        if (b.startTime && b.endTime){
+  let t = b.startTime;
+  while (timeLess(t, b.endTime)){
+    bookedTimes.add(t);
+    t = addMinsToTime(t, slotMins);
+  }
+}
+
+      });
+    }
+
+    // generate slots
+    const slots = [];
+    let t = start;
+    while (
+      timeLess(addMinsToTime(t, needed), end) ||
+      addMinsToTime(t, needed) === end
+    ){
+      slots.push(t);
+      t = addMinsToTime(t, slotMins);
+    }
+
+    const available = slots.filter(t =>
+      !blockedTimes.has(t) && !bookedTimes.has(t)
+    );
+
+    if (!available.length){
+      timeSlots.innerHTML = `<div class="px">No times left on this date.</div>`;
+      timeSelect.disabled = true;
+      toast(timeToast, "No times left. Try another date.");
+      return;
+    }
+
+    // enable UI
+    timeSelect.disabled = false;
+    timeSelect.innerHTML =
+      `<option value="">Select a time</option>` +
+      available.map(t => `<option value="${t}">${t}</option>`).join("");
+
+    timeSlots.innerHTML = available.map(t => `
+      <button class="time-btn" data-time="${t}">${t}</button>
+    `).join("");
+
+    timeSlots.querySelectorAll(".time-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        timeSlots.querySelectorAll(".time-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedTime = btn.dataset.time;
+        timeSelect.value = selectedTime;
+        renderSummary();
+      });
+    });
+
+  }catch(err){
+    console.error("renderAvailableTimes failed:", err);
+    timeSlots.innerHTML = `<div class="px">Failed to load time slots.</div>`;
+    timeSelect.disabled = true;
+    toast(timeToast, "Error loading time slots. Check console.");
+  }
+}
+
+/* ===================== SUMMARY ===================== */
+function renderSummary(){
+  if (!selectedServices.length) return;
+
+  const sty = selectedStylistId ? getPublicProfile(selectedStylistId) : null;
+
+  const dateISO = dateSelect.value;
+
+  const ready =
+  selectedServices.length &&
+  selectedStylistId &&
+  dateISO &&
+  selectedTime;
+
+  summaryBox.style.display = ready ? "block" : "none";
+  if (!ready) return;
+
+  const styName = (sty?.displayName?.trim() || sty?.name || "Stylist");
+  const styProf = (sty?.profession || sty?.role || "Stylist");
+sumStylist.textContent = `${styName} (${styProf})`;
+
+  const price = totalPrice();
+const duration = totalDuration();
+const remaining = Math.max(0, price - DEPOSIT);
+
+sumService.textContent =
+  selectedServices.map(s => s.name).join(" + ");
+
+sumDateTime.textContent =
+  `${dateISO} · ${selectedTime} – ${addMinsToTime(selectedTime, duration)}`;
+
+sumPrice.textContent = money(price);
+sumRemaining.textContent = money(remaining);
+
+
+  payBtn.disabled = false;
+  bookWithoutPayBtn.disabled = false;
+}
+if (!renderSummary._stripeMounted) {
+    renderSummary._stripeMounted = true;
+    setupPaymentRequest();
+  }
+
+/* ===================== CREATE BOOKING ===================== */
+async function createBooking({ depositPaid }) {
+  if (!selectedServices.length)
+  return toast(payToast, "Pick a service.");
+
+  if (!selectedStylistId) return toast(payToast, "Pick a stylist.");
+  if (!dateSelect.value) return toast(payToast, "Pick a date.");
+  if (!selectedTime) return toast(payToast, "Pick a time.");
+
+  payBtn.disabled = true;
+  bookWithoutPayBtn.disabled = true;
+
+  try{
+    const bookingRef = push(ref(db, "bookings"));
+
+    const price = totalPrice();
+
+    const remaining = Math.max(0, price - DEPOSIT);
+
+    await set(bookingRef, {
+      clientId: currentUser.uid,
+      clientEmail: currentUser.email || "",
+      stylistId: selectedStylistId,
+
+     services: selectedServices.map(s => ({
+  serviceId: s.id,
+  name: s.name,
+  durationMins: s.durationMins,
+  price: s.price
+})),
+
+totalDurationMins: totalDuration(),
+
+startTime: selectedTime,
+endTime: addMinsToTime(selectedTime, totalDuration()),
+
+      price,
+      deposit: DEPOSIT,
+      remaining,
+
+      date: dateSelect.value,
+      time: selectedTime,
+
+      status: "pending",          // stylist can confirm in their dashboard
+      depositPaid: !!depositPaid, // set true when payment succeeds
+      createdAt: Date.now()
+    });
+
+    toast(payToast, depositPaid ? "Deposit received. Booking created." : "Booking created (test).");
+    resetAfterBooking();
+    await loadAppointments();
+
+  }catch(e){
+    console.error(e);
+    toast(payToast, "Booking blocked by database rules.");
+  }finally{
+    payBtn.disabled = false;
+    bookWithoutPayBtn.disabled = false;
+  }
+}
+
+function resetAfterBooking(){
+  // keep service & stylist so user can book similar service again quickly
+  selectedTime = null;
+  timeSlots.querySelectorAll(".time-btn").forEach(b=>b.classList.remove("active"));
+  timeSelect.value = "";
+  summaryBox.style.display = "none";
+}
+
+payBtn.addEventListener("click", async ()=>{
+  // Hook point for Stripe Payment Request / Apple Pay / Google Pay:
+  // 1) Create payment intent on server
+  // 2) Confirm payment in browser
+  // 3) If success => createBooking({depositPaid:true})
+  await createBooking({ depositPaid: true });
+});
+
+bookWithoutPayBtn.addEventListener("click", async ()=>{
+  await createBooking({ depositPaid: false });
+});
+
+/* ===================== MY APPOINTMENTS + CANCEL ===================== */
+async function loadAppointments(){
+  appointmentsList.innerHTML = `<div class="px">Loading…</div>`;
+
+  try{
+    const q = query(ref(db, "bookings"), orderByChild("clientId"), equalTo(currentUser.uid));
+    const snap = await get(q);
+
+    if (!snap.exists()){
+      appointmentsList.innerHTML = `<div class="px">No appointments yet.</div>`;
+      return;
+    }
+
+    const all = Object.entries(snap.val() || {}).map(([id, b])=>({ id, ...b }));
+    all.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+
+    appointmentsList.innerHTML = all.map(b=>{
+     const sty = getPublicProfile(b.stylistId);
+
+      const styName = sty.displayName?.trim() || sty.name || "Stylist";
+      const styProf = sty.profession || sty.role || "Stylist";
+
+      const st = (b.status||"pending").toLowerCase();
+      const canCancel = (st !== "cancelled" && st !== "rejected");
+
+      return `
+        <div class="appt">
+          <div style="min-width:0;">
+            <p class="appt-title">${safeText(b.serviceName || "Service")}</p>
+            <div class="appt-meta">
+              ${safeText(b.date || "—")} · ${safeText(b.time || "—")}<br/>
+              <span class="px">Book with ${safeText(styName)} (${safeText(styProf)})</span><br/>
+              <span class="px">Deposit: ${b.depositPaid ? "Paid" : "Not paid"} · ${safeText(money(b.deposit || 10))}</span>
+            </div>
+            <div class="tag">
+              <span class="dot ${statusDot(st)}"></span>
+              Status — ${safeText(st)}
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+            ${
+              (!b.depositPaid && st !== "cancelled" && st !== "rejected")
+              ? `<button class="link-btn" data-pay="${safeText(b.id)}">Pay deposit</button>`
+              : ``
+            }
+            <button class="link-btn danger" ${canCancel ? "" : "disabled"} data-cancel="${safeText(b.id)}">Cancel</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // pay deposit (simulated)
+    appointmentsList.querySelectorAll("[data-pay]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.pay;
+        btn.disabled = true;
+        try{
+          await update(ref(db, `bookings/${id}`), { depositPaid:true, updatedAt: Date.now() });
+          toast(apptToast, "Deposit recorded (simulated).");
+          await loadAppointments();
+        }catch(e){
+          console.error(e);
+          toast(apptToast, "Update blocked by DB rules.");
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // cancel booking
+    appointmentsList.querySelectorAll("[data-cancel]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.cancel;
+        if (!confirm("Cancel this appointment?")) return;
+        btn.disabled = true;
+        try{
+          await update(ref(db, `bookings/${id}`), { status:"cancelled", cancelledAt: Date.now() });
+          toast(apptToast, "Appointment cancelled.");
+          await loadAppointments();
+        }catch(e){
+          console.error(e);
+          toast(apptToast, "Cancel blocked by DB rules.");
+          btn.disabled = false;
+        }
+      });
+    });
+
+  }catch(e){
+    console.error(e);
+    appointmentsList.innerHTML = `<div class="px">Couldn’t load appointments (rules?).</div>`;
+    toast(apptToast, "Appointments read blocked.");
+  }
+}
+
+/* ===================== INIT UI ===================== */
+renderServices();
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<!--
+==================== IMPORTANT RTDB NOTES (for this booking page) =====================
+
+This booking page needs to read:
+- /serviceOptions
+- /stylists (or at minimum /stylists/<uid>/services, /availability, /blockedSlots)
+- /users (for stylist public profile: displayName/profession/photoURL)
+
+If your rules currently block reading /users, the stylist cards won’t be able to show photos/names.
+A common approach is to store a "publicProfile" under /stylists/<uid>/publicProfile and allow reads.
+But since you already store photoURL under /users/<uid>, you can allow limited reads for stylist users only.
+
+If you want a simple approach, add a "public" mirror:
+  /stylists/<uid>/publicProfile = { displayName, profession, photoURL }
+and let clients read that.
+
+We can update your rules once you confirm which path you prefer.
+-->
+</body>
+</html>
+

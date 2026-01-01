@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create Account — Angels Hair Mall</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400&display=swap');
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:#fff;
+  color:#000;
+}
+
+/* NAVBAR */
+header {
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#fff;
+  border-bottom:1px solid #eee;
+}
+
+.nav {
+  max-width:1400px;
+  margin:auto;
+  padding:18px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo { font-family:Georgia,serif; letter-spacing:2px; }
+
+.nav a {
+  margin-left:30px;
+  font-size:13px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:#000;
+}
+
+section {
+  max-width:1400px;
+  margin:auto;
+  padding:120px 40px;
+}
+
+.wrapper { max-width:420px; }
+
+h2 {
+  font-family:'Playfair Display',serif;
+  font-size:42px;
+  font-weight:400;
+  margin-bottom:16px;
+}
+
+.subtitle {
+  font-size:14px;
+  color:#555;
+  margin-bottom:50px;
+  line-height:1.6;
+}
+
+form { display:grid; gap:28px; }
+
+.field { position:relative; }
+
+input, select {
+  width:100%;
+  padding:14px 0;
+  border:none;
+  border-bottom:1px solid #000;
+  background:none;
+  font-size:14px;
+}
+
+.toggle {
+  position:absolute;
+  right:0;
+  bottom:14px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+button {
+  padding:16px;
+  border:1px solid #000;
+  background:none;
+  text-transform:uppercase;
+  font-size:13px;
+  letter-spacing:1px;
+  cursor:pointer;
+}
+
+button:hover { background:#000; color:#fff; }
+button:disabled { opacity:0.5; cursor:not-allowed; }
+
+.feedback {
+  font-size:13px;
+  margin-top:12px;
+  opacity:0;
+  transform:translateY(6px);
+  transition:0.3s ease;
+}
+.feedback.show { opacity:1; transform:translateY(0); }
+
+.actions a {
+  font-size:13px;
+  text-decoration:underline;
+  color:#000;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">ANGELS HAIR MALL</div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrapper">
+    <h2>Create Account</h2>
+    <p class="subtitle">
+      Join Angels Hair Mall to book appointments or manage your stylist schedule.
+    </p>
+
+    <form id="signupForm">
+
+      <input id="name" placeholder="Full name" required>
+      <input id="email" type="email" placeholder="Email address" required>
+
+      <!-- STYLIST ONLY -->
+      <input
+        id="profession"
+        placeholder="Profession (e.g. Barber, Hair Stylist)"
+        style="display:none"
+      >
+
+      <div class="field">
+        <input id="password" type="password" placeholder="Password" required>
+        <span class="toggle" onclick="toggleVisibility('password', this)">Show</span>
+      </div>
+
+      <div class="field">
+        <input id="confirmPassword" type="password" placeholder="Confirm password" required>
+        <span class="toggle" onclick="toggleVisibility('confirmPassword', this)">Show</span>
+      </div>
+
+      <select id="role" required>
+        <option value="">Select account type</option>
+        <option value="client">Client</option>
+        <option value="stylist">Stylist</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Create Account</button>
+
+      <div class="feedback" id="successMessage">
+        ✓ Account created successfully
+      </div>
+
+      <div class="actions" id="postSignupActions" style="display:none;">
+        <a href="login.html">Sign in to continue</a>
+      </div>
+
+      <div class="feedback" id="errorMessage"></div>
+
+    </form>
+  </div>
+</section>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+/* Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyAZ_6nBhOpzPBtYunilmDhcKd0Woe1PWYs",
+  authDomain: "angelshairmall.firebaseapp.com",
+  databaseURL: "https://angelshairmall-default-rtdb.firebaseio.com",
+  projectId: "angelshairmall",
+  storageBucket: "angelshairmall.appspot.com",
+  messagingSenderId: "374317477500",
+  appId: "1:374317477500:web:ba6aad4bfba04a9ae6e3f9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+/* DOM */
+const form = document.getElementById("signupForm");
+const roleSelect = document.getElementById("role");
+const professionInput = document.getElementById("profession");
+const errorMessage = document.getElementById("errorMessage");
+const successMessage = document.getElementById("successMessage");
+const submitBtn = document.getElementById("submitBtn");
+
+/* ROLE TOGGLE */
+roleSelect.addEventListener("change", () => {
+  const isStylist = roleSelect.value === "stylist";
+  professionInput.style.display = isStylist ? "block" : "none";
+  professionInput.required = isStylist;
+});
+
+/* SUBMIT */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  errorMessage.classList.remove("show");
+  successMessage.classList.remove("show");
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  const role = roleSelect.value;
+  const profession = professionInput.value.trim();
+
+  if (password !== confirm) {
+    errorMessage.textContent = "Passwords do not match";
+    errorMessage.classList.add("show");
+    return;
+  }
+
+  if (role === "stylist" && !profession) {
+    errorMessage.textContent = "Please enter your profession";
+    errorMessage.classList.add("show");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating…";
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
+
+    await set(ref(db, `users/${uid}`), {
+      uid,
+      email,
+      role,
+      displayName: name,
+      profession: role === "stylist" ? profession : null,
+      createdAt: Date.now()
+    });
+
+    successMessage.classList.add("show");
+    document.getElementById("postSignupActions").style.display = "block";
+    submitBtn.textContent = "Account Created";
+
+    Array.from(form.elements).forEach(el => el.disabled = true);
+
+  } catch (err) {
+    errorMessage.textContent =
+      err.code === "auth/email-already-in-use"
+        ? "This email is already registered. Please sign in instead."
+        : err.message;
+    errorMessage.classList.add("show");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Account";
+  }
+});
+</script>
+
+<script>
+function toggleVisibility(id, el) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+  el.textContent = input.type === "password" ? "Show" : "Hide";
+}
+</script>
+
+</body>
+</html>
+
+
+
+
