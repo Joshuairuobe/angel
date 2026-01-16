@@ -666,6 +666,23 @@ input:focus, select:focus{ border-color:#cfcfcf; }
           <div class="summary-row"><span>Deposit (now)</span><strong class="gold">£10</strong></div>
           <div class="summary-row"><span>Remaining (after service)</span><strong id="sumRemaining">—</strong></div>
             <div id="payment-request-button"></div>
+<!-- Card payment (Stripe Elements) -->
+<div id="card-payment" style="margin-top:12px;">
+  <label style="font-size:11px; letter-spacing:.14em; text-transform:uppercase;">
+    Pay with card
+  </label>
+  <div
+    id="card-element"
+    style="
+      margin-top:8px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+    ">
+  </div>
+  <div class="toast" id="cardToast"></div>
+</div>
 
           <button class="primary" id="payBtn" type="button">Pay £10 deposit (Apple Pay / Google Pay)</button>
           <button class="secondary" id="bookWithoutPayBtn" type="button" title="Use only for testing.">Create booking (no deposit) — test</button>
@@ -922,6 +939,23 @@ async function setupPaymentRequest() {
     }
   });
 }
+const elements = stripe.elements({
+  appearance: {
+    theme: "stripe",
+    variables: {
+      colorPrimary: "#0b0b0b",
+      colorText: "#0b0b0b",
+      colorBackground: "#ffffff",
+      borderRadius: "12px"
+    }
+  }
+});
+
+const cardElement = elements.create("card", {
+  hidePostalCode: true
+});
+
+cardElement.mount("#card-element");
 
 /* ===================== AUTH ===================== */
 onAuthStateChanged(auth, async user => {
@@ -1238,75 +1272,64 @@ async function renderAvailableTimes(){
       get(query(ref(db, "bookings"), orderByChild("stylistId"), equalTo(selectedStylistId)))
     ]);
 
-    const av = avSnap.exists() ? (avSnap.val() || {}) : null;
-    if (!av || !av.enabled){
+    const avRaw = avSnap.exists() ? avSnap.val() : null;
+    if (!avRaw || !avRaw.enabled){
       timeSlots.innerHTML = `<div class="px">No availability for this day.</div>`;
       timeSelect.disabled = true;
-      toast(timeToast, "No availability for that date.");
       return;
     }
 
-    // ✅ DEFINE needed BEFORE USING IT
     const needed = totalDuration();
     if (!needed || needed <= 0){
-      timeSlots.innerHTML = `<div class="px">Selected service has no duration set.</div>`;
+      timeSlots.innerHTML = `<div class="px">Selected service has no duration.</div>`;
       timeSelect.disabled = true;
-      toast(timeToast, "Selected service has no duration set.");
       return;
     }
-const normalizeTime = t =>
-  t.includes(":") ? t : `${t.padStart(2, "0")}:00`;
 
-const start = normalizeTime(av.start || "09:00");
-const end   = normalizeTime(av.end   || "18:00");
+    // normalize availability
+    const availability = {
+      start: avRaw.start || "09:00",
+      end: avRaw.end || "18:00",
+      slotMins: Number(avRaw.slotMins || 30)
+    };
 
-    const slotMins = Number(av.slotMins || 30);
-
-    // blocked slots
-    const blockedObj = blockedSnap.exists() ? (blockedSnap.val() || {}) : {};
-    const blockedTimes = new Set(Object.keys(blockedObj).filter(t => blockedObj[t]));
-
-    // booked slots
-    const bookedTimes = new Set();
+    // normalize bookings
+    const bookings = [];
     if (bookingsSnap.exists()){
       Object.values(bookingsSnap.val()).forEach(b=>{
         if (b.date !== dateISO) return;
+
         const st = (b.status || "pending").toLowerCase();
         if (st === "cancelled" || st === "rejected") return;
-        if (b.startTime && b.endTime){
-  let t = b.startTime;
-  while (timeLess(t, b.endTime)){
-    bookedTimes.add(t);
-    t = addMinsToTime(t, slotMins);
-  }
-}
 
+        if (b.startTime && b.endTime){
+          bookings.push({
+            start: b.startTime,
+            end: b.endTime
+          });
+        }
       });
     }
 
-    // generate slots
-    const slots = [];
-    let t = start;
-    while (
-      timeLess(addMinsToTime(t, needed), end) ||
-      addMinsToTime(t, needed) === end
-    ){
-      slots.push(t);
-      t = addMinsToTime(t, slotMins);
-    }
+    // normalize blocked slots
+    const blocked = blockedSnap.exists() ? blockedSnap.val() : {};
 
-    const available = slots.filter(t =>
-      !blockedTimes.has(t) && !bookedTimes.has(t)
-    );
+    // 🔥 SINGLE SOURCE OF TRUTH (Booksy-style)
+    const available = generateAvailableSlots({
+      availability,
+      dateISO,
+      serviceDuration: needed,
+      bookings,
+      blocked
+    });
 
     if (!available.length){
       timeSlots.innerHTML = `<div class="px">No times left on this date.</div>`;
       timeSelect.disabled = true;
-      toast(timeToast, "No times left. Try another date.");
       return;
     }
 
-    // enable UI
+    // render UI
     timeSelect.disabled = false;
     timeSelect.innerHTML =
       `<option value="">Select a time</option>` +
@@ -1330,9 +1353,67 @@ const end   = normalizeTime(av.end   || "18:00");
     console.error("renderAvailableTimes failed:", err);
     timeSlots.innerHTML = `<div class="px">Failed to load time slots.</div>`;
     timeSelect.disabled = true;
-    toast(timeToast, "Error loading time slots. Check console.");
   }
 }
+function timeToMins(t){
+  const [h,m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function generateAvailableSlots({
+  availability,
+  dateISO,
+  serviceDuration,
+  bookings = [],
+  blocked = {}
+}) {
+  const { start, end, slotMins } = availability;
+
+  const startM = timeToMins(start);
+  const endM   = timeToMins(end);
+  const now    = timeToMins(
+    `${pad2(new Date().getHours())}:${pad2(new Date().getMinutes())}`
+  );
+
+  const slots = [];
+
+  // 1️⃣ raw slots
+  for (let t = startM; t + serviceDuration <= endM; t += slotMins) {
+    slots.push(t);
+  }
+
+  // blocked ranges
+  const blockedRanges = Object.keys(blocked || {}).map(t => {
+    const s = timeToMins(t);
+    return { start: s, end: s + slotMins };
+  });
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+
+  return slots
+    // 2️⃣ today-only filtering
+    .filter(t => dateISO !== todayISO || t > now)
+
+    // 3️⃣ booking overlap
+    .filter(t => {
+      const endT = t + serviceDuration;
+      return !bookings.some(b =>
+        t < timeToMins(b.end) && endT > timeToMins(b.start)
+      );
+    })
+
+    // 4️⃣ blocked slot overlap
+    .filter(t => {
+      const endT = t + serviceDuration;
+      return !blockedRanges.some(b =>
+        t < b.end && endT > b.start
+      );
+    })
+
+    // convert back to HH:MM
+    .map(t => `${pad2(Math.floor(t / 60))}:${pad2(t % 60)}`);
+}
+
 
 /* ===================== SUMMARY ===================== */
 function renderSummary(){
@@ -1424,6 +1505,18 @@ endTime: addMinsToTime(selectedTime, totalDuration()),
       depositPaid: !!depositPaid, // set true when payment succeeds
       createdAt: Date.now()
     });
+// 🔔 notify stylist
+const notifRef = push(ref(db, `stylistNotifications/${selectedStylistId}`));
+
+await set(notifRef, {
+  type: "booking_request",
+  bookingId: bookingRef.key,
+  clientId: currentUser.uid,
+  clientEmail: currentUser.email || "",
+  message: "New booking request — please confirm or cancel.",
+  createdAt: Date.now(),
+  read: false
+});
 
     toast(payToast, depositPaid ? "Deposit received. Booking created." : "Booking created (test).");
     resetAfterBooking();
@@ -1446,13 +1539,57 @@ function resetAfterBooking(){
   summaryBox.style.display = "none";
 }
 
-payBtn.addEventListener("click", async ()=>{
-  // Hook point for Stripe Payment Request / Apple Pay / Google Pay:
-  // 1) Create payment intent on server
-  // 2) Confirm payment in browser
-  // 3) If success => createBooking({depositPaid:true})
-  await createBooking({ depositPaid: true });
+payBtn.addEventListener("click", async () => {
+  payBtn.disabled = true;
+  toast(payToast, "Processing payment…");
+
+  try {
+    // 1️⃣ Create PaymentIntent (server)
+    const res = await fetch(
+      "https://us-central1-angelshairmall.cloudfunctions.net/createPaymentIntent",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 1000 }) // £10
+      }
+    );
+
+    const { clientSecret } = await res.json();
+
+    // 2️⃣ Confirm card payment
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      clientSecret,
+      {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            email: currentUser.email || ""
+          }
+        }
+      }
+    );
+
+    if (error) {
+      console.error(error);
+      toast(payToast, error.message || "Payment failed.");
+      payBtn.disabled = false;
+      return;
+    }
+
+    if (paymentIntent.status === "succeeded") {
+      // 3️⃣ Create booking ONLY after payment
+      await createBooking({ depositPaid: true });
+      toast(payToast, "Payment successful.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    toast(payToast, "Payment error.");
+  } finally {
+    payBtn.disabled = false;
+  }
 });
+
 
 bookWithoutPayBtn.addEventListener("click", async ()=>{
   await createBooking({ depositPaid: false });
@@ -1504,10 +1641,83 @@ async function loadAppointments(){
               ? `<button class="link-btn" data-pay="${safeText(b.id)}">Pay deposit</button>`
               : ``
             }
-            <button class="link-btn danger" ${canCancel ? "" : "disabled"} data-cancel="${safeText(b.id)}">Cancel</button>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 10px;">
+  To cancel, please <a href="contact.html" style="color: var(--muted); text-decoration: underline;">contact the salon</a> directly.
+</p>
+
+
           </div>
         </div>
       `;
+    }).join("");
+
+    // pay deposit (simulated)
+    appointmentsList.querySelectorAll("[data-pay]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.pay;
+        btn.disabled = true;
+        try{
+          await update(ref(db, `bookings/${id}`), { depositPaid:true, updatedAt: Date.now() });
+          toast(apptToast, "Deposit recorded (simulated).");
+          await loadAppointments();
+        }catch(e){
+          console.error(e);
+          toast(apptToast, "Update blocked by DB rules.");
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // cancel booking
+    appointmentsList.querySelectorAll("[data-cancel]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.cancel;
+        if (!confirm("Cancel this appointment?")) return;
+        btn.disabled = true;
+        try{
+          await update(ref(db, `bookings/${id}`), { status:"cancelled", cancelledAt: Date.now() });
+          toast(apptToast, "Appointment cancelled.");
+          await loadAppointments();
+        }catch(e){
+          console.error(e);
+          toast(apptToast, "Cancel blocked by DB rules.");
+          btn.disabled = false;
+        }
+      });
+    });
+
+  }catch(e){
+    console.error(e);
+    appointmentsList.innerHTML = `<div class="px">Couldn’t load appointments (rules?).</div>`;
+    toast(apptToast, "Appointments read blocked.");
+  }
+}
+
+/* ===================== INIT UI ===================== */
+renderServices();
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<!--
+==================== IMPORTANT RTDB NOTES (for this booking page) =====================
+
+This booking page needs to read:
+- /serviceOptions
+- /stylists (or at minimum /stylists/<uid>/services, /availability, /blockedSlots)
+- /users (for stylist public profile: displayName/profession/photoURL)
+
+If your rules currently block reading /users, the stylist cards won’t be able to show photos/names.
+A common approach is to store a "publicProfile" under /stylists/<uid>/publicProfile and allow reads.
+But since you already store photoURL under /users/<uid>, you can allow limited reads for stylist users only.
+
+If you want a simple approach, add a "public" mirror:
+  /stylists/<uid>/publicProfile = { displayName, profession, photoURL }
+and let clients read that.
+
+We can update your rules once you confirm which path you prefer.
+-->
+</body>
+</html>
     }).join("");
 
     // pay deposit (simulated)
