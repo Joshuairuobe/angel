@@ -684,7 +684,10 @@ input:focus, select:focus{ border-color:#cfcfcf; }
   <div class="toast" id="cardToast"></div>
 </div>
 
-          <button class="primary" id="payBtn" type="button">Pay £10 deposit (Apple Pay / Google Pay)</button>
+         <button class="primary" id="payBtn">
+  Pay £10 deposit (Card)
+</button>
+
           <button class="secondary" id="bookWithoutPayBtn" type="button" title="Use only for testing.">Create booking (no deposit) — test</button>
           <div class="toast" id="payToast"></div>
 
@@ -899,8 +902,7 @@ async function setupPaymentRequest() {
 
   prButton.mount("#payment-request-button");
 
-  // Hide fake button once Stripe is ready
-  payBtn.style.display = "none";
+  
 
   pr.on("paymentmethod", async (ev) => {
     try {
@@ -1718,4 +1720,5 @@ We can update your rules once you confirm which path you prefer.
 -->
 </body>
 </html>
+
 
